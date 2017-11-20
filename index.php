@@ -3,13 +3,38 @@
     <head>
         <meta charset="utf-8">
         <title>Listado de películas</title>
+        <style>
+            #buscar {
+                margin-bottom: 20px;
+            }
+            #tabla {
+                margin: auto;
+            }
+        </style>
     </head>
     <body>
+        <?php
+        $titulo = trim(filter_input(INPUT_GET, 'titulo')) ?? '';
+        ?>
+        <div id="buscar">
+            <form action="index.php" method="get">
+                <fieldset>
+                    <legend>Título:</legend>
+                    <input type="text" name="titulo" autofocus
+                           value="<?= $titulo ?>" />
+                    <input type="submit" value="Buscar" />
+                </fieldset>
+            </form>
+        </div>
         <?php
         require 'auxiliar.php';
 
         $pdo = conectar();
-        $query = $pdo->query('SELECT * FROM peliculas');
+        $sent = $pdo->prepare("SELECT *
+                                  FROM peliculas
+                                 WHERE lower(titulo) LIKE lower(:titulo)");
+                                 // WHERE lower(titulo) LIKE lower('%' || :titulo) || '%'"); Operador de concatenación en SQL ||.
+        $sent->execute([':titulo' => "%$titulo%"]);
         // Podemos quitar esta fila porque es iterable
         // $filas = $query->fetchAll();
         ?>
@@ -24,7 +49,7 @@
                     <th>Operaciones</th>
                 </thead>
                 <tbody>
-                    <?php foreach ($query as $fila): ?>
+                    <?php foreach ($sent as $fila): ?>
                         <tr>
                             <td><?= $fila['titulo'] ?></td>
                             <td><?= $fila['anyo'] ?></td>
