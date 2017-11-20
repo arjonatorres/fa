@@ -21,7 +21,7 @@
                 <fieldset>
                     <legend>Título:</legend>
                     <input type="text" name="titulo" autofocus
-                           value="<?= $titulo ?>" />
+                           value="<?= htmlspecialchars($titulo) ?>" />
                     <input type="submit" value="Buscar" />
                 </fieldset>
             </form>
@@ -51,7 +51,7 @@
                 <tbody>
                     <?php foreach ($sent as $fila): ?>
                         <tr>
-                            <td><?= $fila['titulo'] ?></td>
+                            <td><?= htmlspecialchars($fila['titulo']) ?></td>
                             <td><?= $fila['anyo'] ?></td>
                             <td><?= $fila['sinopsis'] ?></td>
                             <td><?= $fila['duracion'] ?></td>
@@ -66,5 +66,6 @@
                 </tbody>
             </table>
         </div>
+        <a href="insertar.php">Insertar una nueva película</a>
     </body>
 </html>
