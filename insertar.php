@@ -12,42 +12,51 @@
         $sinopsis = trim(filter_input(INPUT_POST, 'sinopsis')) ?? '';
         $duracion = trim(filter_input(INPUT_POST, 'duracion')) ?? '';
         $genero_id = trim(filter_input(INPUT_POST, 'genero_id')) ?? '';
+        $error = [];
         if(!empty($_POST)):
             try {
-                $error = [];
                 comprobarTitulo($titulo, $error);
                 comprobarAnyo($anyo, $error);
                 comprobarDuracion($duracion, $error);
-                //comprobarGenero($titulo, $error);
+                $pdo = conectar();
+                comprobarGenero($pdo, $genero_id, $error);
                 comprobarErrores($error);
+                insertar($pdo, $titulo, $anyo, $sinopsis, $duracion, $genero_id);
+                ?>
+                <h3>La película se ha insertado correctamente.</h3>
+                <?php
+                volver();
             } catch (Exception $e) {
-                mostrarErrores($e);
+                mostrarErrores($error);
             }
-        endif; ?>
-
+        endif;
+        if (empty($_POST) || (!empty($_POST) && !empty($error))):
+        ?>
         <form action="insertar.php" method="post">
             <label for="titulo">Título*:</label>
             <input id="titulo" type="text" name="titulo"
-                   value="<?= htmlspecialchars($titulo) ?>"><br>
+                   value="<?= h($titulo) ?>"><br>
             <label for="anyo">Año:</label>
             <input id="anyo" type="text" name="anyo"
-                   value="<?= htmlspecialchars($anyo) ?>"><br>
+                   value="<?= h($anyo) ?>"><br>
             <label for="sinopsis">Sinopsis:</label>
             <textarea
                 id="sinopsis"
                 name="sinopsis"
                 rows="8"
                 cols="70"
-                ><?= htmlspecialchars($sinopsis) ?></textarea><br>
+                ><?= h($sinopsis) ?></textarea><br>
             <label for="duracion">Duración:</label>
             <input id="duracion" type="text" name="duracion"
-                value="<?= htmlspecialchars($duracion) ?>"><br>
+                value="<?= h($duracion) ?>"><br>
             <label for="genero_id">Género*:</label>
             <input id="genero_id" type="text" name="genero_id"
-                value="<?= htmlspecialchars($genero_id) ?>"><br>
+                value="<?= h($genero_id) ?>"><br>
             <input type="submit" value="Insertar">
             <input type="submit" value="Cancelar"
                    formaction="index.php" formmethod="get">
         </form>
+    <?php endif;
+    ?>
     </body>
 </html>

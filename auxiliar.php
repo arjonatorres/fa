@@ -88,7 +88,7 @@ function volver():void
  * @param  string $cadena La cadena a escapar
  * @return string         La cadena escapada
  */
-function h(string $cadena): string
+function h(?string $cadena): string
 {
     return htmlspecialchars($cadena, ENT_QUOTES | ENT_SUBSTITUTE);
 }
@@ -129,7 +129,7 @@ function comprobarAnyo(string $anyo, array &$error): void
             'max_range' => 9999,
         ],
     ]);
-    if ($filtro === 'false') {
+    if ($filtro === false) {
         $error[] = "No es un año válido";
     }
 }
@@ -139,14 +139,34 @@ function comprobarDuracion(string $duracion, &$error): void
     if ($duracion === '') {
         return;
     }
-    $filtro =filter_var($duracion, FILTER_VALIDATE_INT, [
+    $filtro = filter_var($duracion, FILTER_VALIDATE_INT, [
         'options' => [
             'min_range' => 0,
             'max_range' => 32767,
         ],
     ]);
-    if ($filtro === 'false') {
+    if ($filtro === false) {
         $error[] = "No es una duración válida";
+    }
+}
+
+function comprobarGenero(PDO $pdo, $genero_id, array &$error): void
+{
+    if ($genero_id === '') {
+        $error[] = 'El género es obligatorio';
+        return;
+    }
+    $filtro = filter_var($genero_id, FILTER_VALIDATE_INT);
+    if ($filtro === false) {
+        $error[] = 'El género debe ser un número entero';
+        return;
+    }
+    $sent = $pdo->prepare('SELECT COUNT(*)
+                             FROM generos
+                            WHERE id = :genero_id');
+    $sent->execute([':genero_id' => $genero_id]);
+    if ($sent->fetchColumn() === 0) {
+        $error[] = 'El género no existe';
     }
 }
 
@@ -155,4 +175,44 @@ function comprobarErrores(array $error): void
     if (!empty($error)) {
         throw new Exception;
     }
+}
+
+function insertar(
+    PDO $pdo,
+    $titulo,
+    $anyo,
+    $sinopsis,
+    $duracion,
+    $genero_id
+): void
+{
+    $sql = 'INSERT INTO peliculas
+                (titulo, anyo, sinopsis, duracion, genero_id)
+            VALUES (';
+    $exec = [];
+    $sql .= ':titulo,';
+    $exec['titulo'] = $titulo;
+    if ($anyo !== '') {
+        $sql .= ':anyo,';
+        $exec['anyo'] = $anyo;
+    } else {
+        $sql .= 'DEFAULT, ';
+    }
+    if ($sinopsis !== '') {
+        $sql .= ':sinopsis, ';
+        $exec[':sinopsis'] = $sinopsis;
+    } else {
+        $sql .= 'DEFAULT, ';
+    }
+    if ($duracion !== '') {
+        $sql .= ':duracion, ';
+        $exec['duracion'] = $duracion;
+    } else {
+        $sql .= 'DEFAULT, ';
+    }
+    $sql .= ':genero_id';
+    $exec[':genero_id'] = $genero_id;
+    $sql .= ');';
+    $send = $pdo->prepare($sql);
+    $send->execute($exec);
 }
