@@ -186,3 +186,22 @@ function insertar(PDO $pdo, array $valores): void
     $send = $pdo->prepare($sql);
     $send->execute(array_values($valores));
 }
+
+function modificar(PDO $pdo, int $id, array $valores): void
+{
+    $buenos = array_filter($valores);
+    $malos = array_diff($valores, $buenos);
+    $sets = [];
+    foreach($valores as $k => $v) {
+        $sets[] = $v === '' ? "$k = DEFAULT" : "$k = ?";
+    }
+
+    $set = implode(', ', $sets);
+    $sql = "UPDATE peliculas
+               SET $set
+             WHERE id = ?";
+    $exec = array_values(array_filter($valores));
+    $exec[] = $id;
+    $sent = $pdo->prepare($sql);
+    $sent->execute($exec);
+}
