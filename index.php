@@ -14,21 +14,20 @@
     </head>
     <body>
         <?php
-        $titulo = trim(filter_input(INPUT_GET, 'titulo')) ?? '';
+        $titulo = trim(filter_input(INPUT_GET, 'titulo'));
+        require 'auxiliar.php';
         ?>
         <div id="buscar">
             <form action="index.php" method="get">
                 <fieldset>
                     <legend>Título:</legend>
                     <input type="text" name="titulo" autofocus
-                           value="<?= htmlspecialchars($titulo) ?>" />
+                           value="<?= h($titulo) ?>" />
                     <input type="submit" value="Buscar" />
                 </fieldset>
             </form>
         </div>
         <?php
-        require 'auxiliar.php';
-
         $pdo = conectar();
         $sent = $pdo->prepare("SELECT *
                                   FROM peliculas
