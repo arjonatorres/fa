@@ -1,3 +1,4 @@
+<?php session_start() ?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -7,6 +8,9 @@
     <body>
         <?php
         require 'auxiliar.php';
+
+        $_SESSION['pepe'] = 'hola';
+
         $titulo    = trim(filter_input(INPUT_POST, 'titulo'));
         $anyo      = trim(filter_input(INPUT_POST, 'anyo'));
         $sinopsis  = trim(filter_input(INPUT_POST, 'sinopsis'));
