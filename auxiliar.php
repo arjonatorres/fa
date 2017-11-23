@@ -209,7 +209,7 @@ function modificar(PDO $pdo, int $id, array $valores): void
     $sent->execute($exec);
 }
 
-function formulario(array $datos, ?int $id): void
+function formulario(array $datos, ?int $id, array $generos): void
 {
     if ($id === null) {
         $destino = 'insertar.php';
@@ -238,10 +238,29 @@ function formulario(array $datos, ?int $id): void
         <input id="duracion" type="text" name="duracion"
             value="<?= h($duracion) ?>"><br>
         <label for="genero_id">Género*:</label>
-        <input id="genero_id" type="text" name="genero_id"
-            value="<?= h($genero_id) ?>"><br>
+        <select id="genero_id" name="genero_id">
+        <?php
+        foreach ($generos as $v):
+        ?>
+            <option value="<?= h($v['id']) ?>"
+                <?=  $v['id'] === $genero_id ? 'selected' : ''?>>
+                <?= h($v['genero']) ?>
+             </option>
+        <?php
+        endforeach;
+        ?>
+        </select>
+        <!--<input id="genero_id" type="text" name="genero_id"
+            value="<?= h($genero_id) ?>">--><br>
+        <hr />
         <input type="submit" value="<?= $boton ?>">
         <a href="index.php">Cancelar</a>
     </form>
     <?php
+}
+
+function generos($pdo): array
+{
+    return $pdo->query('SELECT *
+                          FROM generos')->fetchAll();
 }

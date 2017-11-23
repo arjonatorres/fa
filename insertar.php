@@ -17,12 +17,12 @@
         $duracion  = trim(filter_input(INPUT_POST, 'duracion'));
         $genero_id = trim(filter_input(INPUT_POST, 'genero_id'));
         $error = [];
+        $pdo = conectar();
         if(!empty($_POST)):
             try {
                 comprobarTitulo($titulo, $error);
                 comprobarAnyo($anyo, $error);
                 comprobarDuracion($duracion, $error);
-                $pdo = conectar();
                 comprobarGenero($pdo, $genero_id, $error);
                 comprobarErrores($error);
                 $valores = array_filter(compact(
@@ -42,13 +42,14 @@
             }
         endif;
         if (empty($_POST) || (!empty($_POST) && !empty($error))){
-                formulario(compact(
-                    'titulo',
-                    'anyo',
-                    'sinopsis',
-                    'duracion',
-                    'genero_id'
-                ), null);
+            $generos = generos($pdo);
+            formulario(compact(
+                'titulo',
+                'anyo',
+                'sinopsis',
+                'duracion',
+                'genero_id'
+            ), null, $generos);
         }
     ?>
     </body>

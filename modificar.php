@@ -46,13 +46,14 @@
                 }
             endif;
             if (empty($_POST) || (!empty($_POST) && !empty($error))) {
+                $generos = generos($pdo);
                 formulario(compact(
                     'titulo',
                     'anyo',
                     'sinopsis',
                     'duracion',
                     'genero_id'
-                ), $id);
+                ), $id, $generos);
             }
         } catch (Exception $e) {
             mostrarErrores($error);
