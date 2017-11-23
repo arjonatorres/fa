@@ -45,7 +45,7 @@
                     <th>Sinopsis</th>
                     <th>Duración</th>
                     <th>Género</th>
-                    <th>Operaciones</th>
+                    <th colspan="2">Operaciones</th>
                 </thead>
                 <tbody>
                     <?php foreach ($sent as $fila): ?>
@@ -55,6 +55,11 @@
                             <td><?= h($fila['sinopsis']) ?></td>
                             <td><?= h($fila['duracion']) ?></td>
                             <td><?= h($fila['genero_id']) ?></td>
+                            <td>
+                                <a href="modificar.php?id=<?= $fila['id'] ?>">
+                                    Modificar
+                                </a>
+                            </td>
                             <td>
                                 <a href="borrar.php?id=<?= $fila['id'] ?>">
                                     Borrar

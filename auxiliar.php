@@ -186,3 +186,62 @@ function insertar(PDO $pdo, array $valores): void
     $send = $pdo->prepare($sql);
     $send->execute(array_values($valores));
 }
+
+function comp($valor)
+{
+    return $valor !== '';
+}
+
+function modificar(PDO $pdo, int $id, array $valores): void
+{
+    $sets = [];
+    foreach($valores as $k => $v) {
+        $sets[] = $v === '' ? "$k = DEFAULT" : "$k = ?";
+    }
+
+    $set = implode(', ', $sets);
+    $sql = "UPDATE peliculas
+               SET $set
+             WHERE id = ?";
+    $exec = array_values(array_filter($valores, 'comp'));
+    $exec[] = $id;
+    $sent = $pdo->prepare($sql);
+    $sent->execute($exec);
+}
+
+function formulario(array $datos, ?int $id): void
+{
+    if ($id === null) {
+        $destino = 'insertar.php';
+        $boton = 'Insertar';
+    } else {
+        $destino = "modificar.php?id=$id";
+        $boton = 'Modificar';
+    }
+    extract($datos);
+    ?>
+    <form action="<?= $destino ?>" method="post">
+        <label for="titulo">Título*:</label>
+        <input id="titulo" type="text" name="titulo"
+               value="<?= h($titulo) ?>"><br>
+        <label for="anyo">Año:</label>
+        <input id="anyo" type="text" name="anyo"
+               value="<?= h($anyo) ?>"><br>
+        <label for="sinopsis">Sinopsis:</label>
+        <textarea
+            id="sinopsis"
+            name="sinopsis"
+            rows="8"
+            cols="70"
+            ><?= h($sinopsis) ?></textarea><br>
+        <label for="duracion">Duración:</label>
+        <input id="duracion" type="text" name="duracion"
+            value="<?= h($duracion) ?>"><br>
+        <label for="genero_id">Género*:</label>
+        <input id="genero_id" type="text" name="genero_id"
+            value="<?= h($genero_id) ?>"><br>
+        <input type="submit" value="<?= $boton ?>">
+        <a href="index.php">Cancelar</a>
+    </form>
+    <?php
+}
