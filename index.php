@@ -2,6 +2,16 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <title>Listado de películas</title>
         <style>
             #buscar {
@@ -17,59 +27,82 @@
         $titulo = trim(filter_input(INPUT_GET, 'titulo'));
         require 'auxiliar.php';
         ?>
-        <div id="buscar">
-            <form action="index.php" method="get">
-                <fieldset>
-                    <legend>Título:</legend>
-                    <input type="text" name="titulo" autofocus
-                           value="<?= h($titulo) ?>" />
-                    <input type="submit" value="Buscar" />
-                </fieldset>
-            </form>
+        <div class="container">
+            <div class="row">
+                <div id="buscar">
+                    <form action="index.php" method="get" class="form-inline">
+                        <fieldset>
+                            <legend>Buscar</legend>
+                            <div class="form-group">
+                                <label for="titulo">Título: </label>
+                                <input id="titulo" class="form-control" type="text" name="titulo" autofocus
+                                   value="<?= h($titulo) ?>" />
+                            </div>
+                            <input type="submit" value="Buscar" class="btn btn-default"/>
+                        </fieldset>
+                    </form>
+                </div>
+                <?php
+                $pdo = conectar();
+                $sent = $pdo->prepare("SELECT peliculas.id,
+                                              titulo,
+                                              anyo,
+                                              left(sinopsis, 40) AS sinopsis,
+                                              duracion,
+                                              genero_id,
+                                              genero
+                                         FROM peliculas
+                                         JOIN generos ON genero_id = generos.id
+                                        WHERE lower(titulo) LIKE lower(:titulo)");
+                                         // WHERE lower(titulo) LIKE lower('%' || :titulo) || '%'"); Operador de concatenación en SQL ||.
+                $sent->execute([':titulo' => "%$titulo%"]);
+                // Podemos quitar esta fila porque es iterable
+                // $filas = $query->fetchAll();
+                ?>
+                <div class="col-md-offset-1 col-md-10">
+                    <table id="tabla" class="table table-striped">
+                        <thead>
+                            <th>Título</th>
+                            <th>Año</th>
+                            <th>Sinopsis</th>
+                            <th>Duración</th>
+                            <th>Género</th>
+                            <th colspan="2">Operaciones</th>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($sent as $fila): ?>
+                                <tr>
+                                    <td><?= h($fila['titulo']) ?></td>
+                                    <td><?= h($fila['anyo']) ?></td>
+                                    <td><?= h($fila['sinopsis']) ?></td>
+                                    <td><?= h($fila['duracion']) ?></td>
+                                    <td><?= h($fila['genero']) ?></td>
+                                    <td>
+                                        <a class="btn btn-info btn-xs" href="modificar.php?id=<?= $fila['id'] ?>">
+                                            Modificar
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-danger btn-xs" href="borrar.php?id=<?= $fila['id'] ?>">
+                                            Borrar
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-offset-4 col-md-4">
+                    <a class="btn btn-default" href="insertar.php">Insertar una nueva película</a>
+                </div>
+            </div>
         </div>
-        <?php
-        $pdo = conectar();
-        $sent = $pdo->prepare("SELECT *
-                                  FROM peliculas
-                                 WHERE lower(titulo) LIKE lower(:titulo)");
-                                 // WHERE lower(titulo) LIKE lower('%' || :titulo) || '%'"); Operador de concatenación en SQL ||.
-        $sent->execute([':titulo' => "%$titulo%"]);
-        // Podemos quitar esta fila porque es iterable
-        // $filas = $query->fetchAll();
-        ?>
-        <div >
-            <table border="1" id="tabla">
-                <thead>
-                    <th>Título</th>
-                    <th>Año</th>
-                    <th>Sinopsis</th>
-                    <th>Duración</th>
-                    <th>Género</th>
-                    <th colspan="2">Operaciones</th>
-                </thead>
-                <tbody>
-                    <?php foreach ($sent as $fila): ?>
-                        <tr>
-                            <td><?= h($fila['titulo']) ?></td>
-                            <td><?= h($fila['anyo']) ?></td>
-                            <td><?= h($fila['sinopsis']) ?></td>
-                            <td><?= h($fila['duracion']) ?></td>
-                            <td><?= h($fila['genero_id']) ?></td>
-                            <td>
-                                <a href="modificar.php?id=<?= $fila['id'] ?>">
-                                    Modificar
-                                </a>
-                            </td>
-                            <td>
-                                <a href="borrar.php?id=<?= $fila['id'] ?>">
-                                    Borrar
-                                </a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-        <a href="insertar.php">Insertar una nueva película</a>
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="js/bootstrap.min.js"></script>
     </body>
 </html>
