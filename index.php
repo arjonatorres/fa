@@ -29,6 +29,11 @@
         require 'auxiliar.php';
         ?>
         <div class="container">
+            <div class="row">
+                <div class="col-md-offset-10 col-md-2">
+                    <a class="btn btn-info" href="login.php">Login</a>
+                </div>
+            </div>
             <?php if (isset($_SESSION['mensaje'])): ?>
                 <div class="row">
                     <div class="alert alert-success alert-dismissible" role="alert">

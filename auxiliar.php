@@ -275,3 +275,43 @@ function generos($pdo): array
     return $pdo->query('SELECT *
                           FROM generos')->fetchAll();
 }
+
+function comprobarUsuario(string $usuario, array &$error): void
+{
+    if ($usuario === '') {
+        $error[] = 'El usuario es obligatorio';
+        return;
+    }
+    if (mb_strlen($usuario) > 255) {
+        $error[] = 'El usuario es demasiado largo';
+    }
+    if (mb_strpos($usuario, ' ') !== false) {
+        $error[] = 'El usuario no puede contener espacios';
+    }
+}
+
+function comprobarPassword(string $password, array &$error): void
+{
+    if ($password === '') {
+        $error[] = 'La contraseña es obligatoria';
+    }
+}
+
+function buscarUsuario(string $usuario, string $password, array &$error): array
+{
+    $pdo = conectar();
+    $sent = $pdo->prepare('SELECT *
+                     FROM usuarios
+                    WHERE usuario = :usuario');
+    $sent->execute(['usuario' => $usuario]);
+    $fila = $sent->fetch();
+    if (empty($fila)) {
+        $error[] = 'El usuario no existe';
+        throw new Exception;
+    }
+    if (!password_verify($password, $fila['password'])) {
+        $error[] = 'La contraseña no coincide';
+        throw new Exception;
+    }
+    return $fila;
+}
