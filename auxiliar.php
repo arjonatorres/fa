@@ -79,7 +79,7 @@ function comprobarParametro($param, array &$error): void
 function volver():void
 {
     ?>
-    <a href="index.php">Volver</a>
+    <a class="btn btn-info" href="index.php">Volver</a>
     <?php
 }
 
@@ -101,10 +101,11 @@ function mostrarErrores(array $error): void
 {
     foreach ($error as $v):
     ?>
-    <h3>Error: <?= h($v) ?></h3>
+    <div class="alert alert-danger">
+        <p>Error: <?= h($v) ?></p>
+    </div>
     <?php
     endforeach;
-    volver();
 }
 
 function comprobarTitulo(string $titulo, array &$error): void
@@ -221,24 +222,34 @@ function formulario(array $datos, ?int $id, array $generos): void
     extract($datos);
     ?>
     <form action="<?= $destino ?>" method="post">
-        <label for="titulo">Título*:</label>
-        <input id="titulo" type="text" name="titulo"
-               value="<?= h($titulo) ?>"><br>
-        <label for="anyo">Año:</label>
-        <input id="anyo" type="text" name="anyo"
-               value="<?= h($anyo) ?>"><br>
-        <label for="sinopsis">Sinopsis:</label>
-        <textarea
+        <div class="form-group">
+            <label for="titulo">Título*:</label>
+            <input id="titulo" class="form-control" type="text" name="titulo"
+                   value="<?= h($titulo) ?>">
+        </div>
+        <div class="form-group">
+            <label for="anyo">Año:</label>
+            <input id="anyo" class="form-control" type="text" name="anyo"
+                   value="<?= h($anyo) ?>">
+        </div>
+        <div class="form-group">
+            <label for="sinopsis">Sinopsis:</label>
+            <textarea class="form-control"
             id="sinopsis"
             name="sinopsis"
             rows="8"
             cols="70"
-            ><?= h($sinopsis) ?></textarea><br>
-        <label for="duracion">Duración:</label>
-        <input id="duracion" type="text" name="duracion"
-            value="<?= h($duracion) ?>"><br>
-        <label for="genero_id">Género*:</label>
-        <select id="genero_id" name="genero_id">
+            ><?= h($sinopsis) ?></textarea>
+        </div>
+        <div class="form-group">
+            <label for="duracion">Duración:</label>
+            <input id="duracion" class="form-control" type="text" name="duracion"
+            value="<?= h($duracion) ?>">
+        </div>
+        <div class="form-group">
+            <label for="genero_id">Género*:</label>
+            <select id="genero_id" class="form-control" name="genero_id">
+        </div>
         <?php
         foreach ($generos as $v):
         ?>
@@ -250,11 +261,11 @@ function formulario(array $datos, ?int $id, array $generos): void
         endforeach;
         ?>
         </select>
-        <!--<input id="genero_id" type="text" name="genero_id"
-            value="<?= h($genero_id) ?>">--><br>
+
         <hr />
-        <input type="submit" value="<?= $boton ?>">
-        <a href="index.php">Cancelar</a>
+
+        <input type="submit" class="btn btn-success" value="<?= $boton ?>">
+        <a class="btn btn-danger" href="index.php">Cancelar</a>
     </form>
     <?php
 }
