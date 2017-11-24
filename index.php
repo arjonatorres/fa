@@ -29,6 +29,15 @@
         require 'auxiliar.php';
         ?>
         <div class="container">
+            <?php if (isset($_SESSION['mensaje'])): ?>
+                <div class="row">
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <?= $_SESSION['mensaje'] ?>
+                    </div>
+                </div>
+                <?php unset($_SESSION['mensaje']) ?>
+            <?php endif; ?>
             <div class="row">
                 <div id="buscar">
                     <form action="index.php" method="get" class="form-inline">

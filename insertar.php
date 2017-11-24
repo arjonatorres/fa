@@ -45,12 +45,13 @@
                                 'genero_id'
                             ), 'comp');
                             insertar($pdo, $valores);
+                            $_SESSION['mensaje'] = 'La película se ha insertado correctamente.'
                             ?>
-                            <div class="alert alert-success">
+                            <!--<div class="alert alert-success">
                                 <p>La película se ha insertado correctamente.</p>
-                            </div>
+                            </div>-->
                             <?php
-                            volver();
+                            header('Location: index.php');
                         } catch (Exception $e) {
                             mostrarErrores($error);
                         }
