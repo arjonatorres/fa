@@ -33,12 +33,10 @@
                         buscarPelicula($pdo, $id, $error);
                         borrarPelicula($pdo, $id, $error);
                         comprobarErrores($error);
+                        $_SESSION['mensaje'] = 'Película eliminada correctamente.';
                         ?>
-                        <div class="alert alert-success">
-                            <p>Película eliminada correctamente.</p>
-                        </div>
                         <?php
-                        volver();
+                        header('Location: index.php');
                     } catch (Exception $e) {
                         mostrarErrores($error);
                         volver();
