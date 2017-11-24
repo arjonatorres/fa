@@ -18,6 +18,9 @@
             #tabla {
                 margin: auto;
             }
+            .row {
+                margin-top:10px;
+            }
         </style>
     </head>
     <body>
@@ -36,7 +39,9 @@
                                 <input id="titulo" class="form-control" type="text" name="titulo" autofocus
                                    value="<?= h($titulo) ?>" />
                             </div>
-                            <input type="submit" value="Buscar" class="btn btn-default"/>
+                            <button type="submit" value="Buscar" class="btn btn-default">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
                         </fieldset>
                     </form>
                 </div>
@@ -94,7 +99,7 @@
             <div class="row">
                 <hr />
                 <div class="col-md-offset-4 col-md-4">
-                    <a class="btn btn-default" href="insertar.php">Insertar una nueva película</a>
+                    <a class="btn btn-primary" href="insertar.php">Insertar una nueva película</a>
                 </div>
             </div>
         </div>
