@@ -47,25 +47,21 @@
                             insertar($pdo, $valores);
                             $_SESSION['mensaje'] = 'La película se ha insertado correctamente.'
                             ?>
-                            <!--<div class="alert alert-success">
-                                <p>La película se ha insertado correctamente.</p>
-                            </div>-->
                             <?php
                             header('Location: index.php');
+                            return;
                         } catch (Exception $e) {
                             mostrarErrores($error);
                         }
                     endif;
-                    if (empty($_POST) || (!empty($_POST) && !empty($error))){
-                        $generos = generos($pdo);
-                        formulario(compact(
-                            'titulo',
-                            'anyo',
-                            'sinopsis',
-                            'duracion',
-                            'genero_id'
-                        ), null, $generos);
-                    }
+                    $generos = generos($pdo);
+                    formulario(compact(
+                        'titulo',
+                        'anyo',
+                        'sinopsis',
+                        'duracion',
+                        'genero_id'
+                    ), null, $generos);
                 ?>
             </div>
         </div>

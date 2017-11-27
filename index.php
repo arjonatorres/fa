@@ -24,14 +24,16 @@
         </style>
     </head>
     <body>
-        <?php
-        $titulo = trim(filter_input(INPUT_GET, 'titulo'));
-        require 'auxiliar.php';
-        ?>
+
         <div class="container">
             <div class="row">
                 <div class="col-md-offset-10 col-md-2">
-                    <a class="btn btn-info" href="login.php">Login</a>
+                    <?php if (isset($_SESSION['usuario'])): ?>
+                        <?= $_SESSION['usuario']['nombre'] ?>
+                        <a class="btn btn-info" href="logout.php">Logout</a>
+                    <?php else: ?>
+                        <a class="btn btn-info" href="login.php">Login</a>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php if (isset($_SESSION['mensaje'])): ?>
@@ -43,6 +45,10 @@
                 </div>
                 <?php unset($_SESSION['mensaje']) ?>
             <?php endif; ?>
+            <?php
+            $titulo = trim(filter_input(INPUT_GET, 'titulo'));
+            require 'auxiliar.php';
+            ?>
             <div class="row">
                 <div id="buscar">
                     <form action="index.php" method="get" class="form-inline">
@@ -60,6 +66,7 @@
                     </form>
                 </div>
                 <?php
+
                 $pdo = conectar();
                 $sent = $pdo->prepare("SELECT peliculas.id,
                                               titulo,

@@ -31,7 +31,7 @@
                 $fila = buscarUsuario($usuario, $password, $error);
                 $_SESSION['usuario'] = [
                     'id' => $fila['id'],
-                    'nombre' => $fila['nombre'],
+                    'nombre' => $fila['usuario'],
                 ];
                 Header('Location: index.php');
             } catch (Exception $e) {
@@ -39,7 +39,6 @@
             }
         }
         ?>
-
                 <div class="col-md-offset-4 col-md-4">
                     <form action="login.php" method="post">
                         <div class="form-group">
