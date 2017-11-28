@@ -315,3 +315,13 @@ function buscarUsuario(string $usuario, string $password, array &$error): array
     }
     return $fila;
 }
+
+function comprobarLogueado(): bool
+{
+    if(!isset($_SESSION['usuario'])) {
+        $_SESSION['mensaje'] = 'Usuario no identificado';
+        header('Location: index.php');
+        return false;
+    }
+    return true;
+}

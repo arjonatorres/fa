@@ -21,7 +21,9 @@
                     <?php
                     require 'auxiliar.php';
 
-                    $_SESSION['pepe'] = 'hola';
+                    if (!comprobarLogueado()) {
+                        return;
+                    }
 
                     $titulo    = trim(filter_input(INPUT_POST, 'titulo'));
                     $anyo      = trim(filter_input(INPUT_POST, 'anyo'));
