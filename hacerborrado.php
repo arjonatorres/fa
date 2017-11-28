@@ -25,6 +25,9 @@
                     <?php
                     require 'auxiliar.php';
 
+                    if (!comprobarLogueado()) {
+                        return;
+                    }
                     $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? false;
                     try {
                         $error = [];
