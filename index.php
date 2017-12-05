@@ -45,7 +45,8 @@
                 <?php unset($_SESSION['mensaje']) ?>
             <?php endif; ?>
             <?php
-            $titulo = trim(filter_input(INPUT_GET, 'titulo'));
+            $campo = trim(filter_input(INPUT_GET, 'campo'));
+            $texto = trim(filter_input(INPUT_GET, 'texto'));
             ?>
             <div class="row">
                 <hr />
@@ -54,9 +55,30 @@
                     <div class="panel-body">
                         <form action="index.php" method="get" class="form-inline">
                             <div class="form-group">
-                                <label for="titulo">Título: </label>
-                                <input id="titulo" class="form-control" type="text" name="titulo" autofocus
-                                value="<?= h($titulo) ?>" />
+                                <select class="form-control" name="campo">
+                                    <option value="titulo"
+                                        <?= $campo == 'titulo' ? 'selected' : '' ?>
+                                        >Título
+                                    </option>
+                                    <option value="anyo"
+                                        <?= $campo == 'anyo' ? 'selected' : '' ?>
+                                        >Año
+                                    </option>
+                                    <option value="sinopsis"
+                                        <?= $campo == 'sinopsis' ? 'selected' : '' ?>
+                                        >Sinopsis
+                                    </option>
+                                    <option value="duracion"
+                                        <?= $campo == 'duracion' ? 'selected' : '' ?>
+                                        >Duración
+                                    </option>
+                                    <option value="genero_id"
+                                        <?= $campo == 'genero_id' ? 'selected' : '' ?>
+                                        >Género Id
+                                    </option>
+                                </select>
+                                <input class="form-control" type="text" name="texto" autofocus
+                                value="<?= h($texto) ?>" />
                                 <button type="submit" value="Buscar" class="btn btn-default">
                                     <span class="glyphicon glyphicon-search"></span>
                                 </button>
@@ -67,20 +89,32 @@
             </div>
             <div class="row">
                 <?php
-
+                if ($texto === '') {
+                    $texto = 'true';
+                    $operador = '';
+                    $campo = '';
+                }elseif (is_numeric($texto)) {
+                    $texto = (int)$texto;
+                    $operador = '=';
+                } else {
+                    $texto = "lower('%" . $texto . "%')";
+                    $operador = "LIKE";
+                    $campo = "lower($campo)";
+                }
                 $pdo = conectar();
-                $sent = $pdo->prepare("SELECT peliculas.id,
-                                              titulo,
-                                              anyo,
-                                              left(sinopsis, 40) AS sinopsis,
-                                              duracion,
-                                              genero_id,
-                                              genero
-                                         FROM peliculas
-                                         JOIN generos ON genero_id = generos.id
-                                        WHERE lower(titulo) LIKE lower(:titulo)");
-                                         // WHERE lower(titulo) LIKE lower('%' || :titulo) || '%'"); Operador de concatenación en SQL ||.
-                $sent->execute([':titulo' => "%$titulo%"]);
+                $sql = "SELECT peliculas.id,
+                              titulo,
+                              anyo,
+                              left(sinopsis, 40) AS sinopsis,
+                              duracion,
+                              genero_id,
+                              genero
+                         FROM peliculas
+                         JOIN generos ON genero_id = generos.id
+                        WHERE $campo $operador $texto";
+                $sent = $pdo->prepare($sql);
+                    // WHERE lower(titulo) LIKE lower('%' || :titulo || '%'"); Operador de concatenación en SQL ||.
+                $sent->execute();
                 ?>
                 <div class="col-md-offset-1 col-md-10">
                     <table id="tabla" class="table table-striped">
