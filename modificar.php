@@ -24,36 +24,26 @@
                     if (!comprobarLogueado()) {
                         return;
                     }
-                    
+
                     $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? false;
+
                     try {
                         $error = [];
                         comprobarParametro($id, $error);
                         $pdo = conectar();
-                        $fila = buscarPelicula($pdo, $id, $error);
+                        $pelicula = buscarPelicula($pdo, $id, $error);
                         comprobarErrores($error);
-                        extract($fila);
-                        if(!empty($_POST)):
+                        if(!empty($_POST)) {
                             $error = [];
-                            $titulo    = trim(filter_input(INPUT_POST, 'titulo'));
-                            $anyo      = trim(filter_input(INPUT_POST, 'anyo'));
-                            $sinopsis  = trim(filter_input(INPUT_POST, 'sinopsis'));
-                            $duracion  = trim(filter_input(INPUT_POST, 'duracion'));
-                            $genero_id = trim(filter_input(INPUT_POST, 'genero_id'));
+                            $pelicula = obtenerParametros('pelicula', PELICULA_DEFECTO);
                             try {
-                                comprobarTitulo($titulo, $error);
-                                comprobarAnyo($anyo, $error);
-                                comprobarDuracion($duracion, $error);
-                                comprobarGenero($pdo, $genero_id, $error);
+                                comprobarTitulo($pelicula['titulo'], $error);
+                                comprobarAnyo($pelicula['anyo'], $error);
+                                comprobarDuracion($pelicula['duracion'], $error);
+                                comprobarGenero($pdo, $pelicula['genero_id'], $error);
                                 comprobarErrores($error);
-                                $valores = compact(
-                                    'titulo',
-                                    'anyo',
-                                    'sinopsis',
-                                    'duracion',
-                                    'genero_id'
-                                );
-                                modificar($pdo, $id, $valores);
+
+                                modificar($pdo, $id, $pelicula);
                                 $_SESSION['mensaje'] = 'La película se ha modificado correctamente.';
                                 ?>
                                 <!--<h3>La película se ha modificado correctamente.</h3>-->
@@ -63,15 +53,9 @@
                             } catch (Exception $e) {
                                 mostrarErrores($error);
                             }
-                        endif;
+                        }
                         $generos = generos($pdo);
-                        formulario(compact(
-                            'titulo',
-                            'anyo',
-                            'sinopsis',
-                            'duracion',
-                            'genero_id'
-                        ), $id, $generos);
+                        formulario($pelicula, $id, $generos);
                     } catch (Exception $e) {
                         mostrarErrores($error);
                         volver();

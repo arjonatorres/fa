@@ -1,5 +1,21 @@
 <?php
 
+const PELICULA_DEFECTO = [
+    'titulo' => '',
+    'anyo' => '',
+    'sinopsis' => '',
+    'duracion' => '',
+    'genero_id' => '',
+];
+
+function obtenerParametros(string $parametro, array $defecto):array
+{
+    $ret = filter_input(INPUT_POST, $parametro, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+    $ret = array_map('trim', $ret);
+    $ret = array_merge($defecto, $ret);
+    return $ret;
+}
+
 /**
  * Crea una conexión a la base de datos y la devuelve
  * @return PDO          La instancia de la clase PDO que representa la conexión
@@ -224,37 +240,37 @@ function formulario(array $datos, ?int $id, array $generos): void
     <form action="<?= $destino ?>" method="post">
         <div class="form-group">
             <label for="titulo">Título*:</label>
-            <input id="titulo" class="form-control" type="text" name="titulo"
+            <input id="titulo" class="form-control" type="text" name="pelicula[titulo]"
                    value="<?= h($titulo) ?>">
         </div>
         <div class="form-group">
             <label for="anyo">Año:</label>
-            <input id="anyo" class="form-control" type="text" name="anyo"
+            <input id="anyo" class="form-control" type="text" name="pelicula[anyo]"
                    value="<?= h($anyo) ?>">
         </div>
         <div class="form-group">
             <label for="sinopsis">Sinopsis:</label>
             <textarea class="form-control"
             id="sinopsis"
-            name="sinopsis"
+            name="pelicula[sinopsis]"
             rows="8"
             cols="70"
             ><?= h($sinopsis) ?></textarea>
         </div>
         <div class="form-group">
             <label for="duracion">Duración:</label>
-            <input id="duracion" class="form-control" type="text" name="duracion"
+            <input id="duracion" class="form-control" type="text" name="pelicula[duracion]"
             value="<?= h($duracion) ?>">
         </div>
         <div class="form-group">
             <label for="genero_id">Género*:</label>
-            <select id="genero_id" class="form-control" name="genero_id">
+            <select id="genero_id" class="form-control" name="pelicula[genero_id]">
         </div>
         <?php
         foreach ($generos as $v):
         ?>
             <option value="<?= h($v['id']) ?>"
-                <?=  $v['id'] === $genero_id ? 'selected' : ''?>>
+                <?=  $v['id'] == $genero_id ? 'selected' : ''?>>
                 <?= h($v['genero']) ?>
              </option>
         <?php

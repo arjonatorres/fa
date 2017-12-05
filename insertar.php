@@ -24,28 +24,32 @@
                     if (!comprobarLogueado()) {
                         return;
                     }
+                    $defecto = [
+                        'titulo' => '',
+                        'anyo' => '',
+                        'sinopsis' => '',
+                        'duracion' => '',
+                        'genero_id' => '',
+                    ];
 
-                    $titulo    = trim(filter_input(INPUT_POST, 'titulo'));
-                    $anyo      = trim(filter_input(INPUT_POST, 'anyo'));
-                    $sinopsis  = trim(filter_input(INPUT_POST, 'sinopsis'));
-                    $duracion  = trim(filter_input(INPUT_POST, 'duracion'));
-                    $genero_id = trim(filter_input(INPUT_POST, 'genero_id'));
+                    $pelicula = filter_input(INPUT_POST, 'pelicula', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY) ?? [];
+                    $pelicula = array_map('trim', $pelicula);
+                    $pelicula = array_merge($defecto, $pelicula);
+                    //array_walk($pelicula, function (&$v) { $v = trim($v); });
+
+                    /* En vez de recoger cada variable usamos el array peliculas
+                    $titulo = $anyo = $sinopsis = $duracion = $genero_id = '';
+                    extract($pelicula, EXTR_IF_EXISTS);*/
                     $error = [];
                     $pdo = conectar();
                     if(!empty($_POST)):
                         try {
-                            comprobarTitulo($titulo, $error);
-                            comprobarAnyo($anyo, $error);
-                            comprobarDuracion($duracion, $error);
-                            comprobarGenero($pdo, $genero_id, $error);
+                            comprobarTitulo($pelicula['titulo'], $error);
+                            comprobarAnyo($pelicula['anyo'], $error);
+                            comprobarDuracion($pelicula['duracion'], $error);
+                            comprobarGenero($pdo, $pelicula['genero_id'], $error);
                             comprobarErrores($error);
-                            $valores = array_filter(compact(
-                                'titulo',
-                                'anyo',
-                                'sinopsis',
-                                'duracion',
-                                'genero_id'
-                            ), 'comp');
+                            $valores = array_filter($pelicula, 'comp');
                             insertar($pdo, $valores);
                             $_SESSION['mensaje'] = 'La película se ha insertado correctamente.'
                             ?>
@@ -57,13 +61,7 @@
                         }
                     endif;
                     $generos = generos($pdo);
-                    formulario(compact(
-                        'titulo',
-                        'anyo',
-                        'sinopsis',
-                        'duracion',
-                        'genero_id'
-                    ), null, $generos);
+                    formulario($pelicula, null, $generos);
                 ?>
             </div>
         </div>
